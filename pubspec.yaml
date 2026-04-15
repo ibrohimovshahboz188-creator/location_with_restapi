@@ -1,0 +1,46 @@
+name: location_with_restapi
+description: "A new Flutter project for location services and REST API integration."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  http: ^1.6.0
+
+  flutter:
+    sdk: flutter
+
+  # UI va Ikonkalar
+  cupertino_icons: ^1.0.8
+
+  # Xarita va Lokatsiya
+  yandex_mapkit: ^4.2.1
+  geolocator: ^14.0.2
+
+  # REST API uchun (Tavsiya etiladi)
+  dio: ^5.7.0
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+  # API modellari uchun generatorlar
+  build_runner: ^2.4.13
+  json_serializable: ^6.9.0
+
+flutter:
+  uses-material-design: true
+
+  # Assetlar qatori to'g'rilandi
+  assets:
+    - assets/icons/
+
+  # Agar rasm yoki boshqa fayllar bo'lsa, quyidagicha qo'shasiz:
+  # - assets/images/
