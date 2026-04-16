@@ -40,3 +40,18 @@ import 'package:location_with_restapi/models/wether_models.dart';
    }
    return null;
  }
+
+ Future<WeatherModel?> fetchWeatherByCoords(double lat, double lon)async{
+   String apiKey="9ac4331294253137ffa5e10cf72cd1d4";
+   final url=Uri.parse("https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric");
+   try{
+     final response=await http.get(url);
+     if(response.statusCode==200){
+       return WeatherModel.fromJson(jsonDecode(response.body));
+     }
+   }catch (e){
+     print("Obxavo olishda xatolik $e");
+
+   }
+   return null;
+ }

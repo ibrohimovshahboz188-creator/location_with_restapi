@@ -15,6 +15,9 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   late YandexMapController mapController;
   String addressName="";
+WeatherModel? currentCenterWeather;
+bool isLoadingWeather=false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,15 +36,19 @@ class _HomepageState extends State<Homepage> {
                     YandexMap(
                       onCameraPositionChanged:(cameraPosition, reson, finish)async{
                         if(finish){
-                          print("Camera: $cameraPosition");
-                          List<Placemark>address=
-                          await placemarkFromCoordinates(cameraPosition.target.latitude, cameraPosition.target.longitude);
+                          setState(() {
+                            isLoadingWeather=true;
+                          });
+                          List<Placemark> address=await placemarkFromCoordinates(
+                              cameraPosition.target.latitude, cameraPosition.target.longitude);
                           if(address.isNotEmpty){
-                            addressName=address.first.street??"";
-                            setState(() {
-
-                            });
+                            addressName=address.first.subAdministrativeArea?? address.first.locality ??"Nomalum";
                           }
+                          currentCenterWeather= await fetchWeatherByCoords(cameraPosition.target.latitude, cameraPosition.target.longitude);
+                          setState(() {
+                            isLoadingWeather=false;
+                          });
+
                         }
                       },
                       onMapCreated: (controller){
@@ -58,6 +65,23 @@ class _HomepageState extends State<Homepage> {
                         );
                       },
                     ),
+                    Positioned(
+                      bottom: MediaQuery.of(context).size.height*0.52,
+                        child:Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.lightBlueAccent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child:Column(
+                            children: [
+                              Text("${currentCenterWeather?.city??0} ", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+                              Text(" T${currentCenterWeather?.temp??0} C", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+                              Text("W/S ${currentCenterWeather?.windSpeed??0}m/s", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+                              Text("${currentCenterWeather?.humidity??0}% ", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+                            ],
+                          ),
+                        ) ),
                     Icon(Icons.local_airport_sharp, size: 30, color: Colors.red,),
                   ],
                 )
@@ -65,7 +89,6 @@ class _HomepageState extends State<Homepage> {
               Expanded(
                 child: Column(
                   children: [
-                    Text("Viloyat $addressName"),
                ElevatedButton(onPressed: ()async{
                  LocationPermission permission= await Geolocator.checkPermission();
                  if(permission==LocationPermission.denied){
@@ -73,7 +96,7 @@ class _HomepageState extends State<Homepage> {
                  if(permission==LocationPermission.denied){
                    final weather = await fetchTashkentonly();
 
-                   // 3. SnackBar ichida ma'lumotni ko'rsatish
+
                    ScaffoldMessenger.of(context).showSnackBar(
                      SnackBar(
                        backgroundColor: Colors.blueGrey,
