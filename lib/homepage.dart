@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location_with_restapi/models/wether_models.dart';
 import 'package:location_with_restapi/services/http_services.dart';
-import 'package:location_with_restapi/widgets/showdialog_widgets.dart';
+
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -13,6 +14,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   late YandexMapController mapController;
+  String addressName="";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,26 +25,47 @@ class _HomepageState extends State<Homepage> {
       body:Column(
           mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
             Expanded(
               flex: 3,
-                child: YandexMap(
-                  onMapCreated: (controller){
-                    mapController=controller;
-                  },
-                  onUserLocationAdded: (view)async{
-                    return view.copyWith(
-                      pin: view.pin.copyWith(
-                        icon: PlacemarkIcon.single(PlacemarkIconStyle(
-                          image: BitmapDescriptor.fromAssetImage("assets/icons/location.png"),
-                        ))
-                      )
-                    );
-                  },
-                )),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    YandexMap(
+                      onCameraPositionChanged:(cameraPosition, reson, finish)async{
+                        if(finish){
+                          print("Camera: $cameraPosition");
+                          List<Placemark>address=
+                          await placemarkFromCoordinates(cameraPosition.target.latitude, cameraPosition.target.longitude);
+                          if(address.isNotEmpty){
+                            addressName=address.first.street??"";
+                            setState(() {
+
+                            });
+                          }
+                        }
+                      },
+                      onMapCreated: (controller){
+                        mapController=controller;
+                      },
+                      onUserLocationAdded: (view)async{
+                        return view.copyWith(
+                            pin: view.pin.copyWith(
+                                icon: PlacemarkIcon.single(PlacemarkIconStyle(
+                                  image: BitmapDescriptor.fromAssetImage("assets/icons/location.png",),
+                                  scale: 0.5,
+                                ))
+                            )
+                        );
+                      },
+                    ),
+                    Icon(Icons.local_airport_sharp, size: 30, color: Colors.red,),
+                  ],
+                )
+            ),
               Expanded(
                 child: Column(
                   children: [
+                    Text("Viloyat $addressName"),
                ElevatedButton(onPressed: ()async{
                  LocationPermission permission= await Geolocator.checkPermission();
                  if(permission==LocationPermission.denied){
@@ -120,7 +143,8 @@ class _HomepageState extends State<Homepage> {
                                        children: [
                                          Text(data[index].city, style: const TextStyle(color: Colors.white)),
                                          Text("${data[index].temp}C", style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                          
+                                         Text("Namlik ${data[index].humidity} %", style: const TextStyle(color: Colors.white, )),
+                                         Text("Shamol tezligi ${data[index].windSpeed}", style: const TextStyle(color: Colors.white, ))
                                        ],
                                      ),
                                    );

@@ -18,6 +18,8 @@ import 'package:location_with_restapi/models/wether_models.dart';
        city: data['name'],
        temp: data['main']['temp'].toDouble(),
        condition: data['weather'][0]['main'],
+       windSpeed: data['wind']['speed'].toDouble(), // 'json' emas, 'data' bo'lishi kerak
+       humidity: data['main']['humidity'],          // 'json' emas, 'data' bo'lishi kerak
      ));
    }
  }
