@@ -1,3 +1,0 @@
-class Weathers_citys{
-
-}
