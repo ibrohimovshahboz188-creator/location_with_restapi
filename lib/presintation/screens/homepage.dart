@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import 'package:location_with_restapi/cubits/weather_cubit.dart';
+import 'package:location_with_restapi/presintation/screens/newspage.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/models/weather_model.dart';
@@ -24,6 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.amber,
         title: const Text("Yandex Map"),
+        leading: TextButton(onPressed: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Newspage()));
+        },
+            child:Text("News")),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
